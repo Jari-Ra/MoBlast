@@ -9,23 +9,9 @@
     }
 });
 
-var DebugObject = me.HUD_Item.extend({
-    init: function (x, y) {
-        this.parent(x, y);
-        this.font = new me.Font("Arial", 20, "white"); 
-    },
-
-    draw: function (context, x, y) {
-        this.font.draw(context, this.value, this.pos.x + x, this.pos.y + y);
-    }
-});
-
 var PlayScreen = me.ScreenObject.extend({
     onResetEvent: function () {
         me.levelDirector.loadLevel("introduction_map");
-
-        me.game.addHUD(0, GAME_GLOBALS.getMapHeight() - GAME_GLOBALS.getBlockSize(),
-            GAME_GLOBALS.getMapWidth(), GAME_GLOBALS.getBlockSize());
 
         me.game.HUD.addItem("score", new ScoreObject(GAME_GLOBALS.getMapWidth() - GAME_GLOBALS.getBlockSize(),
             GAME_GLOBALS.getMapHeight() - GAME_GLOBALS.getBlockSize()));
@@ -33,14 +19,15 @@ var PlayScreen = me.ScreenObject.extend({
         me.game.sort();
 
         me.input.bindKey(me.input.KEY.ESC, "esc", true);
+        me.input.bindKey(me.input.KEY.SPACE, "space", true);
         me.input.bindMouse(me.input.mouse.LEFT, me.input.KEY.SPACE);
         me.input.bindTouch(me.input.KEY.SPACE);        
 
-        //me.audio.playTrack("runtothehills");
+        me.audio.playTrack("level1");
 
     },
 
-    update: function () {
+    update: function () {        
     },
 
     onDestroyEvent: function () {
@@ -56,6 +43,7 @@ var TitleScreen = me.ScreenObject.extend({
 
         this.title = null;
         this.font = null;
+        this.debugFont = null;
         this.scrollerfont = null;
         this.scrollertween = null;
 
@@ -67,8 +55,6 @@ var TitleScreen = me.ScreenObject.extend({
 
         me.game.addHUD(0, 0,
             GAME_GLOBALS.getMapWidth(), GAME_GLOBALS.getMapHeight());
-
-        me.game.HUD.addItem("debug", new DebugObject(0, 0));
         
     },
 
@@ -76,7 +62,7 @@ var TitleScreen = me.ScreenObject.extend({
         if (this.title == null) {
             this.title = me.loader.getImage("title_screen");
             this.font = new me.BitmapFont("32x32_font", 32);
-            this.font.set("center");
+            this.font.set("center");            
 
             this.scrollerfont = new me.BitmapFont("32x32_font", 32);
             this.scrollerfont.set("left");
@@ -90,10 +76,10 @@ var TitleScreen = me.ScreenObject.extend({
         }, 10000).onComplete(this.scrollover.bind(this)).start();        
 
         me.input.bindKey(me.input.KEY.ENTER, "enter", true);
-        me.input.bindMouse(me.input.mouse.LEFT, me.input.KEY.ENTER);
-        /*me.input.bindTouch(me.input.KEY.ENTER);*/
+        //me.input.bindMouse(me.input.mouse.LEFT, me.input.KEY.ENTER);
+        me.input.bindTouch(me.input.KEY.ENTER);
 
-        //me.audio.playTrack("toxicity");
+        me.audio.playTrack("title");
     },
 
     scrollover: function () {
@@ -110,13 +96,6 @@ var TitleScreen = me.ScreenObject.extend({
         if (me.input.isKeyPressed('enter')) {
             me.state.change(me.state.PLAY);
         }
-
-        var touchInputs = me.input.touches;
-        //$('#debug-text').html("touch enabled: " + me.sys.touch + " touches: " + me.sys.touches);
-        GAME_GLOBALS.debug("touch enabled: " + me.sys.touch + " touches: " + me.sys.touches);
-        if (touchInputs != null && touchInputs[0] != null && touchInputs[1] != null) {
-            me.state.change(me.state.PLAY);
-        }
     },
 
     draw: function (context) {
@@ -128,9 +107,8 @@ var TitleScreen = me.ScreenObject.extend({
         } 
         this.font.draw(context, toPlayText, GAME_GLOBALS.getMapWidth() / 2, GAME_GLOBALS.getMapHeight() /2);
         this.scrollerfont.draw(context, this.scroller, this.scrollerpos, GAME_GLOBALS.getMapHeight() - GAME_GLOBALS.getBlockSize());
-        GAME_GLOBALS.debug("touch: " + (me.sys.touch) + " touches: " + me.sys.touches);
-        //$('#debug-text').html("touch enabled: " + me.sys.touch + " touches: " + me.sys.touches);
-        
+        GAME_GLOBALS.debugToContext(context, "touch: " + (me.sys.touch) + " touches: " + me.input.touches.length + " " + 
+            + me.input.touches[0].x + ", " + me.input.touches[0].y + ", " + me.input.touches[0].id);
     
     },
 

@@ -1,8 +1,9 @@
-// testausta
+﻿// testausta
 // lisää kommenttia
 var GAME_GLOBALS = GAME_GLOBALS || {};
 
-var GAME_GLOBALS = {
+var GAME_GLOBALS = {    
+
     setBlockSize: function (value) {
         GAME_GLOBALS.blockSize = value;
     },
@@ -19,12 +20,19 @@ var GAME_GLOBALS = {
         return GAME_GLOBALS.getBlockSize() * 15;
     },
 
-    debug: function (text) {
-        me.game.HUD.updateItemValue("debug", text);
+    getMapBlock: function (value) {
+        return Math.floor(value / GAME_GLOBALS.getBlockSize());
+    },
 
-        if ($('#debug-text')) {
-            $('#debug-text').html(text);
-        } 
+    debugToContext: function (context, text) {
+        if (context != null) {
+            var debugFont = new me.Font("Arial", 20, "white");
+            debugFont.draw(context, text, 20, 20);
+        }        
+    },
+
+    debug: function (text) {
+        console.log(text);
     }
 };
 
@@ -38,7 +46,7 @@ var g_resources = [{
 }, {
     name: "introduction_map",
     type: "tmx",
-    src: "res/maps/level1_48x48.tmx"
+    src: "res/maps/level1_48x48.tmx"    
 }, {
     name: "player",
     type: "image",
@@ -64,43 +72,30 @@ var g_resources = [{
     type: "audio",
     src: "res/sounds/",
     channel: 2
-}];
-
-/*, {
-    name: "runtothehills",
+}, {
+    name: "title",
     type: "audio",
-    src: "Assets/",
+    src: "res/music/",
     channel: 2
 }, {
-    name: "toxicity",
+    name: "level1",
     type: "audio",
-    src: "Assets/",
+    src: "res/music/",
     channel: 2
-}*/
-
+}];
 
 var jsApp = {
     onload: function () {
 							
-        /*if ($(window).width() > 1279 ) {
-            GAME_GLOBALS.setBlockSize(64);
-        } else if ($(window).width() > 640) {
-            GAME_GLOBALS.setBlockSize(48);
-        } else {
-            GAME_GLOBALS.setBlockSize(32);
-        }*/
-
         GAME_GLOBALS.setBlockSize(48);
 	    
-        if (!me.video.init('jsApp', GAME_GLOBALS.getMapWidth(),
+        if (!me.video.init('#jsApp', GAME_GLOBALS.getMapWidth(),
         GAME_GLOBALS.getMapHeight(), false, 1.0)) {
             alert("Sorry but your browser does not support html 5 canvas.");
             return;
         }
-
-        //me.video.scale(me.video.getScreenFrameBuffer(), 1.5);                 
-
-        me.audio.init("mp3,ogg");
+        
+        me.audio.init("mp3");
 
         me.loader.onload = this.loaded.bind(this);
 
@@ -117,12 +112,12 @@ var jsApp = {
         me.entityPool.add("mainPlayer", PlayerEntity);
         //me.entityPool.add("bomb", BombEntity);
         me.entityPool.add("CoinEntity", CoinEntity);
-        me.input.bindKey(me.input.KEY.LEFT, "left");
+        /*me.input.bindKey(me.input.KEY.LEFT, "left");
         me.input.bindKey(me.input.KEY.RIGHT, "right");
         me.input.bindKey(me.input.KEY.UP, "up");
         me.input.bindKey(me.input.KEY.DOWN, "down");
         me.input.bindKey(me.input.KEY.SPACE, "space");
-        me.input.bindKey(me.input.KEY.ESC, "esc");
+        me.input.bindKey(me.input.KEY.ESC, "esc");*/
         //me.debug.renderHitBox = true;
         //me.debug.renderCollisionMap = true;        
 
